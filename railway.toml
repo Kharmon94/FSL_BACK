@@ -4,6 +4,6 @@ builder = "dockerfile"
 [deploy]
 startCommand = "/rails/bin/start-server"
 healthcheckPath = "/up"
-healthcheckTimeout = 90
+healthcheckTimeout = 180
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10

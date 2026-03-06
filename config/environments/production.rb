@@ -59,16 +59,18 @@ Rails.application.configure do
     protocol: "https"
   }
 
-  # SendGrid SMTP
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp.sendgrid.net",
-    port: 587,
-    user_name: "apikey",
-    password: ENV["SENDGRID_API_KEY"],
-    authentication: :plain,
-    enable_starttls_auto: true
-  }
+  # SendGrid SMTP (optional - use :test when key not set to avoid boot issues)
+  config.action_mailer.delivery_method = ENV["SENDGRID_API_KEY"].present? ? :smtp : :test
+  if ENV["SENDGRID_API_KEY"].present?
+    config.action_mailer.smtp_settings = {
+      address: "smtp.sendgrid.net",
+      port: 587,
+      user_name: "apikey",
+      password: ENV["SENDGRID_API_KEY"],
+      authentication: :plain,
+      enable_starttls_auto: true
+    }
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -81,9 +83,10 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other Host header attacks.
-  # Allow Railway internal hostnames for health checks and internal routing.
-  config.hosts << ".railway.app" << ".railway.internal" << "localhost"
+  # Allow Railway hostnames (including healthcheck.railway.app) and /up from any host.
+  config.hosts << ".railway.app" << ".railway.internal" << "localhost" << "healthcheck.railway.app"
+  config.hosts << proc { |_host, req| req.path == "/up" } # Allow /up from any host for health checks
 
-  # Skip host authorization for /up so internal health checks succeed.
+  # Skip host authorization for /up so Railway health checks succeed.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end
