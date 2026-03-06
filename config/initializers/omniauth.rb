@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :google_oauth2,
-           ENV["GOOGLE_CLIENT_ID"],
-           ENV["GOOGLE_CLIENT_SECRET"],
-           scope: "email,profile",
-           path_prefix: "/api/v1/auth"
+if ENV["GOOGLE_CLIENT_ID"].present? && ENV["GOOGLE_CLIENT_SECRET"].present?
+  Rails.application.config.middleware.use OmniAuth::Builder do
+    provider :google_oauth2,
+             ENV["GOOGLE_CLIENT_ID"],
+             ENV["GOOGLE_CLIENT_SECRET"],
+             scope: "email,profile",
+             path_prefix: "/api/v1/auth"
+  end
 end
 
 OmniAuth.config.allowed_request_methods = [:get]

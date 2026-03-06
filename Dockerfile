@@ -59,12 +59,9 @@ COPY --from=build /rails /rails
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp && \
-    chmod +x bin/rails bin/rake bin/docker-entrypoint bin/thrust
+    chmod +x bin/rails bin/rake bin/docker-entrypoint bin/thrust bin/start-server
 USER 1000:1000
 
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start server (Railway overrides with startCommand using PORT)
+# Use start-server script (handles db:prepare and PORT)
 EXPOSE 80
-CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+CMD ["/rails/bin/start-server"]

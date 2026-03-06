@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+cd /rails
+
+# Prepare database
+./bin/rails db:prepare 2>/dev/null || echo "db:prepare skipped/failed"
+./bin/rails db:seed 2>/dev/null || true
+
+# Start server on PORT (Railway injects this)
+PORT=${PORT:-3000}
+exec bundle exec rails server -b 0.0.0.0 -p "${PORT}"
