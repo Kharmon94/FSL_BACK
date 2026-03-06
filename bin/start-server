@@ -3,10 +3,12 @@ set -e
 
 cd /rails
 
-# Prepare database
-./bin/rails db:prepare 2>/dev/null || echo "db:prepare skipped/failed"
-./bin/rails db:seed 2>/dev/null || true
-
-# Start server on PORT (Railway injects this)
+export RAILS_ENV=${RAILS_ENV:-production}
 PORT=${PORT:-3000}
+
+echo "[start-server] RAILS_ENV=$RAILS_ENV PORT=$PORT"
+echo "[start-server] Preparing database..."
+./bin/rails db:prepare 2>/dev/null || echo "[start-server] db:prepare skipped/failed"
+./bin/rails db:seed 2>/dev/null || true
+echo "[start-server] Starting Rails on 0.0.0.0:$PORT"
 exec bundle exec rails server -b 0.0.0.0 -p "${PORT}"
