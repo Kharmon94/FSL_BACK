@@ -7,10 +7,15 @@ export RAILS_ENV=${RAILS_ENV:-production}
 PORT=${PORT:-3000}
 
 echo "[start-server] RAILS_ENV=$RAILS_ENV PORT=$PORT"
-# Brief delay so external DB is reachable; Railway assigns PORT
-sleep 2
-echo "[start-server] Preparing database..."
-./bin/rails db:prepare 2>/dev/null || echo "[start-server] db:prepare skipped/failed"
+# db:prepare runs in pre-deploy when DATABASE_URL is set (Postgres); for SQLite, run here
+if [ -z "$DATABASE_URL" ]; then
+  echo "[start-server] Preparing database (SQLite)..."
+  ./bin/rails db:prepare 2>/dev/null || echo "[start-server] db:prepare skipped/failed"
+fi
+echo "[start-server] Seeding database..."
 ./bin/rails db:seed 2>/dev/null || true
-echo "[start-server] Starting Rails on 0.0.0.0:$PORT"
-exec bundle exec rails server -b 0.0.0.0 -p "${PORT}"
+echo "[start-server] Starting Rails on 127.0.0.1:3000 (nginx on $PORT)"
+bundle exec rails server -b 127.0.0.1 -p 3000 &
+echo "[start-server] Starting nginx on 0.0.0.0:$PORT"
+envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /tmp/nginx.conf
+exec nginx -c /tmp/nginx.conf -g 'daemon off;'

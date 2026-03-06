@@ -2,6 +2,7 @@
 builder = "dockerfile"
 
 [deploy]
+preDeployCommand = "/bin/sh -c \"cd /rails && bundle exec rails db:prepare\""
 startCommand = "/rails/bin/start-server"
 healthcheckPath = "/up"
 healthcheckTimeout = 180

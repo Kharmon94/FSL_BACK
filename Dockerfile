@@ -14,9 +14,9 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
-# Install base packages (libpq5 for pg gem at runtime)
+# Install base packages (libpq5 for pg, nginx for healthcheck proxy, gettext for envsubst)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libpq5 && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libpq5 nginx gettext-base && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
@@ -54,6 +54,7 @@ FROM base
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
+COPY --from=build /rails/config/nginx.conf.template /etc/nginx/nginx.conf.template
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
