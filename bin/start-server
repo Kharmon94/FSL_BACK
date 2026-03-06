@@ -17,5 +17,6 @@ echo "[start-server] Seeding database..."
 echo "[start-server] Starting Rails on 127.0.0.1:3000 (nginx on $PORT)"
 bundle exec rails server -b 127.0.0.1 -p 3000 &
 echo "[start-server] Starting nginx on 0.0.0.0:$PORT"
+mkdir -p /tmp/nginx-body /tmp/nginx-proxy /tmp/nginx-fastcgi /tmp/nginx-uwsgi /tmp/nginx-scgi
 envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /tmp/nginx.conf
 exec nginx -c /tmp/nginx.conf -g 'daemon off;'

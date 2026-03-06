@@ -4,6 +4,11 @@ error_log /dev/stderr;
 events { worker_connections 1024; }
 http {
   access_log /dev/stdout;
+  client_body_temp_path /tmp/nginx-body;
+  proxy_temp_path /tmp/nginx-proxy;
+  fastcgi_temp_path /tmp/nginx-fastcgi;
+  uwsgi_temp_path /tmp/nginx-uwsgi;
+  scgi_temp_path /tmp/nginx-scgi;
   server {
     listen ${PORT};
     location = /up {
