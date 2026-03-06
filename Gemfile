@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "8.0.4"
+gem "rails", "8.1.2"
 # Use sqlite3 for dev/test; PostgreSQL for production
 gem "sqlite3", ">= 2.1"
 gem "pg", "~> 1.5", group: :production
