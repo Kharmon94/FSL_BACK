@@ -1,0 +1,10 @@
+development:
+  adapter: async
+
+test:
+  adapter: test
+
+production:
+  adapter: <%= ENV["REDIS_URL"].present? ? "redis" : "async" %>
+  url: <%= ENV["REDIS_URL"] %>
+  channel_prefix: futurescope_api_production
